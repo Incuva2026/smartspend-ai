@@ -18,9 +18,9 @@ export const fileToBase64 = (file: File): Promise<string> => {
 
 const getAiClient = () => {
   // Preferir la variable de entorno de Vite; fallback a process.env si existe
-  const apiKey = (import.meta as any).env?.VITE_API_KEY || (process.env as any).API_KEY;
+  const apiKey = (import.meta as any).env?.GEN_API_KEY || (process.env as any).API_KEY;
   if (!apiKey) {
-    throw new Error('Missing API key. Create .env with VITE_API_KEY or set process.env.API_KEY');
+    throw new Error('Missing API key. Create .env with GEN_API_KEY or set process.env.API_KEY');
   }
   return new GoogleGenAI({ apiKey });
 };
