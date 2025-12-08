@@ -1,4 +1,4 @@
-# SmartSpend AI — Guía rápida (REAL)
+# SmartSpend AI — Guía rápida
 
 Breve, práctica y lista para usar localmente.
 
