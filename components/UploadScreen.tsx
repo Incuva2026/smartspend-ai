@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Upload, X, Loader2, Image as ImageIcon } from 'lucide-react';
-import { analyzeReceipts } from '../services/geminiService';
+// import { analyzeReceipts } from '../services/geminiService';
 import { ReceiptItem, Theme } from '../types';
 
 interface UploadScreenProps {
