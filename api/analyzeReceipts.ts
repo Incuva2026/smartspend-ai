@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { analyzeReceipts } from 'services/geminiService';
+import { analyzeReceipts } from '../services/geminiService.ts';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log("Body recibido:", req.body);
@@ -12,6 +12,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log("Receip correct :)")
   } catch (error: any) {
     console.error(error);
+    console.error("ERROR en analyzeReceipts:", error);
     res.status(500).json({ error: error.message });
     console.log("Receip incorrect :(")
 
