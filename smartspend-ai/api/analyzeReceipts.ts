@@ -2,7 +2,8 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { analyzeReceipts } from '../../services/geminiService';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
-  if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
+  console.log("Body recibido:", req.body);
+    if (req.method !== 'POST') return res.status(405).send('Method Not Allowed');
 
   try {
     const { files } = req.body; // files: [{ data: base64, mimeType }]
