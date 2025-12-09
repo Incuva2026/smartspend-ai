@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { User, MessageSquare, Lightbulb, BarChart2, X, Send } from 'lucide-react';
 import { AssistantMode, ChatMessage, ReceiptItem, Theme } from '../types';
-import { chatWithAssistant } from '../services/geminiService';
+// import { chatWithAssistant } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
 
 interface AssistantProps {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip as RechartsTooltip, Legend, BarChart, Bar, XAxis, YAxis, CartesianGrid, LineChart, Line } from 'recharts';
 import { ReceiptItem, Theme, ChartType } from '../types';
-import { generateInsights } from '../services/geminiService';
+// import { generateInsights } from '../services/geminiService';
 import { Sparkles, TrendingUp, DollarSign, Calendar, Plus, X, Layout, BarChart3, PieChart as PieChartIcon, Activity } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 
