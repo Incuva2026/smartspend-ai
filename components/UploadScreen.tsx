@@ -27,26 +27,69 @@ export const UploadScreen = ({ onDataLoaded, theme }: UploadScreenProps) => {
     setFiles(prev => prev.filter((_, i) => i !== index));
   };
 
+  // const handleAnalyze = async () => {
+  //   if (files.length === 0) {
+  //     setError("Por favor sube al menos una imagen.");
+  //     return;
+  //   }
+
+  //   setIsAnalyzing(true);
+  //   setError(null);
+
+  //   try {
+  //     const data = await analyzeReceipts(files);
+  //     onDataLoaded(data);
+  //     setFiles([]); // Limpiar archivos tras éxito para permitir subir más
+  //   } catch (err) {
+  //     console.error(err);
+  //     setError("Hubo un error analizando las boletas. Intenta nuevamente.");
+  //   } finally {
+  //     setIsAnalyzing(false);
+  //   }
+  // };
+
   const handleAnalyze = async () => {
-    if (files.length === 0) {
-      setError("Por favor sube al menos una imagen.");
-      return;
-    }
+  if (files.length === 0) {
+    setError("Por favor sube al menos una imagen.");
+    return;
+  }
 
-    setIsAnalyzing(true);
-    setError(null);
+  setIsAnalyzing(true);
+  setError(null);
 
-    try {
-      const data = await analyzeReceipts(files);
-      onDataLoaded(data);
-      setFiles([]); // Limpiar archivos tras éxito para permitir subir más
-    } catch (err) {
-      console.error(err);
-      setError("Hubo un error analizando las boletas. Intenta nuevamente.");
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
+  try {
+    // Convertir archivos a base64
+    const base64Files = await Promise.all(
+      files.map(file => new Promise<{ data: string; mimeType: string }>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve({
+          data: (reader.result as string).split(',')[1], // solo base64
+          mimeType: file.type
+        });
+        reader.onerror = reject;
+      }))
+    );
+
+    // Llamar al endpoint serverless
+    const response = await fetch('/api/analyzeReceipts', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ files: base64Files }),
+    });
+
+    if (!response.ok) throw new Error("Error al comunicarse con el servidor.");
+
+    const data: ReceiptItem[] = await response.json();
+    onDataLoaded(data);
+    setFiles([]); // limpiar archivos tras éxito
+  } catch (err: any) {
+    console.error(err);
+    setError(err.message || "Hubo un error analizando las boletas.");
+  } finally {
+    setIsAnalyzing(false);
+  }
+};
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[80vh] px-4 max-w-3xl mx-auto">

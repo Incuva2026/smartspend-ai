@@ -26,24 +26,67 @@ const getAiClient = () => {
   return new GoogleGenAI({ apiKey });
 };
 
-export const analyzeReceipts = async (files: File[]): Promise<ReceiptItem[]> => {
+// export const analyzeReceipts = async (files: File[]): Promise<ReceiptItem[]> => {
+//   const ai = getAiClient();
+//   const parts = [];
+
+//   // Add all images
+//   for (const file of files) {
+//     const base64Data = await fileToBase64(file);
+//     parts.push({
+//       inlineData: {
+//         mimeType: file.type,
+//         data: base64Data,
+//       },
+//     });
+//   }
+
+//   // Add the prompt
+//   parts.push({
+//     text: "Analiza estas imágenes de boletas/recibos. Extrae la información de cada una en un formato estructurado. Identifica el comercio, la fecha (YYYY-MM-DD), el total y una categoría general (ej: Comida, Transporte, Servicios, Ropa, Varios)."
+//   });
+
+//   const response = await ai.models.generateContent({
+//     model: "gemini-2.5-flash",
+//     contents: { parts },
+//     config: {
+//       responseMimeType: "application/json",
+//       responseSchema: {
+//         type: Type.ARRAY,
+//         items: {
+//           type: Type.OBJECT,
+//           properties: {
+//             merchant: { type: Type.STRING },
+//             date: { type: Type.STRING },
+//             total: { type: Type.NUMBER },
+//             category: { type: Type.STRING },
+//             description: { type: Type.STRING },
+//           },
+//           required: ["merchant", "total", "category"],
+//         },
+//       },
+//     },
+//   });
+
+//   if (response.text) {
+//     return JSON.parse(response.text) as ReceiptItem[];
+//   }
+//   return [];
+// };
+
+
+export const analyzeReceipts = async (base64Files: { data: string; mimeType: string }[]): Promise<ReceiptItem[]> => {
   const ai = getAiClient();
-  const parts = [];
+  const parts = base64Files.map(file => ({
+    inlineData: {
+      mimeType: file.mimeType,
+      data: file.data,
+    },
+  }));
 
-  // Add all images
-  for (const file of files) {
-    const base64Data = await fileToBase64(file);
-    parts.push({
-      inlineData: {
-        mimeType: file.type,
-        data: base64Data,
-      },
-    });
-  }
-
-  // Add the prompt
+  // Agregamos prompt
   parts.push({
-    text: "Analiza estas imágenes de boletas/recibos. Extrae la información de cada una en un formato estructurado. Identifica el comercio, la fecha (YYYY-MM-DD), el total y una categoría general (ej: Comida, Transporte, Servicios, Ropa, Varios)."
+    text: "Analiza estas imágenes de boletas/recibos. Extrae la información de cada una..."
   });
 
   const response = await ai.models.generateContent({
@@ -68,11 +111,10 @@ export const analyzeReceipts = async (files: File[]): Promise<ReceiptItem[]> => 
     },
   });
 
-  if (response.text) {
-    return JSON.parse(response.text) as ReceiptItem[];
-  }
-  return [];
+  return response.text ? JSON.parse(response.text) : [];
 };
+
+
 
 export const generateInsights = async (receipts: ReceiptItem[]): Promise<string> => {
   const ai = getAiClient();
